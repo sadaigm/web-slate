@@ -1,22 +1,12 @@
-import React from "react";
-import Canvas, { SlateScreenType } from "./Canvas";
-import { LockContext, SlateDataContext } from "./context";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEraser,
   faGripLines,
-  faGripLinesVertical,
-  faLock,
-  faLockOpen,
   faPaintBrush,
   faPencilRuler,
   faTable,
-  faUndo,
-  faUndoAlt,
-  faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import useDevice, { SCREENSIZE } from "./useDevice";
-import ColorPicker from "./ColorPicker";
+import React from "react";
+import Canvas, { SlateScreenType } from "./Canvas";
+import { LockContext } from "./context";
 import Toolbar, { ScreenIconType } from "./Toolbar";
 
 const MainPage = () => {
@@ -27,9 +17,7 @@ const MainPage = () => {
     icon: faPaintBrush,
     color: "red",
   });
-  const { islocked, toggleLock } = React.useContext(LockContext);
-  const { toggleRender } = React.useContext(SlateDataContext);
-  const device = useDevice();
+  const { islocked } = React.useContext(LockContext);
   const clearScreen = (state: number) => {
     if (state === 2) {
       setClearTrigger(!trigger);
@@ -37,9 +25,6 @@ const MainPage = () => {
       // add transparent brush to erase
       setClearTrigger(!trigger);
     }
-  };
-  const lockSlate = () => {
-    toggleLock();
   };
   const changeSlateScreenType = () => {
     //   default sketch -> english
@@ -78,9 +63,6 @@ const MainPage = () => {
         color: "red",
       });
     }
-  };
-  const loadData = () => {
-    toggleRender();
   };
   return (
     <>

@@ -1,5 +1,5 @@
 import React from "react";
-import { SlateData, SlateDataContext, SlatePattern } from "./context";
+import { SlateDataContext, SlatePattern } from "./context";
 
 type DataProviderProps = {
   guid?: string;

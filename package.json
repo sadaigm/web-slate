@@ -1,7 +1,7 @@
 {
   "name": "web-slate",
   "version": "0.1.0",
-  "homepage": "https://192.168.1.15:3000",
+  "homepage": "https://sadaigm.github.io/web-slate",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -45,7 +45,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -63,6 +65,7 @@
     ]
   },
   "devDependencies": {
-    "@types/material-ui": "^0.21.8"
+    "@types/material-ui": "^0.21.8",
+    "gh-pages": "^3.2.3"
   }
 }

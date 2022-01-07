@@ -1,9 +1,4 @@
-import {
-  faCog,
-  faCogs,
-  faPalette,
-  faWrench,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCog } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import useDevice, { SCREENSIZE } from "../useDevice";

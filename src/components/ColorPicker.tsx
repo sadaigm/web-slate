@@ -1,19 +1,10 @@
 import { faPalette } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
-import useDevice, { SCREENSIZE } from "./useDevice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import SettingsDialogue from "./settings/SettingsDialogue";
-import { ContainerDiv } from "./ui/Container";
+import React from "react";
 import { SettingContext } from "./context";
+import { ContainerDiv } from "./ui/Container";
 
 const ColorPicker = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const modalRef: React.RefObject<HTMLDivElement> =
-    React.createRef<HTMLDivElement>();
-  const popupRef: React.RefObject<HTMLDivElement> =
-    React.createRef<HTMLDivElement>();
-  const buttonRef: React.RefObject<HTMLButtonElement> = React.createRef();
-  const device = useDevice();
   const { brushColor, setBrushColor } = React.useContext(SettingContext);
 
   const changeColor = (e: any) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { drawSlateScreen } from "../slate-screen/SlateScreenManager";
 import { getLineHeight } from "./canvasutils";
 import {
@@ -35,7 +35,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const pageContextRef = React.useRef<CanvasRenderingContext2D | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const contextRef = React.useRef<CanvasRenderingContext2D | null>(null);
-  const [screenType, setScreenType] = React.useState(slateScreenType);
+  // const [] = React.useState(slateScreenType);
   const [isDrawing, setDrawing] = React.useState(false);
   const [isClearing, setClearing] = React.useState(false);
   const [data, setData] = React.useState([] as Array<SlateData>);
@@ -45,8 +45,8 @@ const Canvas: React.FC<CanvasProps> = ({
   );
   const device = useDevice();
   const [screenWidth, setScreenWidth] = React.useState(window.innerWidth - 50);
-  const [lineHeight, setLineHeight] = React.useState(getLineHeight(device));
-  const [clearToggle, setClearToggle] = React.useState(false);
+  const [lineHeight] = React.useState(getLineHeight(device));
+  const [clearToggle] = React.useState(false);
   const { islocked } = React.useContext(LockContext);
   const { brushColor } = React.useContext(SettingContext);
   const [color, setColor] = React.useState(brushColor);
@@ -54,6 +54,15 @@ const Canvas: React.FC<CanvasProps> = ({
   React.useEffect(() => {}, [brushColor]);
   const { renderData, slatePattern, loadData } =
     React.useContext(SlateDataContext);
+  const clearSlateScreen = React.useCallback(() => {
+    let ctx = pageContextRef.current;
+    let canvasCtx = pageCanvasRef.current;
+    if (ctx) {
+      if (canvasCtx) {
+        ctx.clearRect(0, 0, screenWidth, screenHeight);
+      }
+    }
+  }, [screenHeight, screenWidth]);
 
   React.useEffect(() => {
     var offsetHeight = document?.getElementById("myDiv")?.offsetHeight;
@@ -61,55 +70,6 @@ const Canvas: React.FC<CanvasProps> = ({
     offsetHeight && setScreenHeight(offsetHeight);
     offsetWidth && setScreenWidth(offsetWidth);
   }, []);
-
-  const drawLine = (
-    ctx: any,
-    start: any,
-    end: any,
-    color: string,
-    yFactor: number
-  ) => {
-    ctx.beginPath();
-    ctx.moveTo(start.x, start.y);
-    ctx.lineTo(end.x, end.y);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.closePath();
-  };
-  const getEnglish = (ctx: any, yFactor: number, initialY: number) => {
-    if (ctx) {
-      //   console.log("yFactor", yFactor);
-
-      for (let index = 1; index <= 5; index++) {
-        let y = initialY + yFactor * 5 + lineHeight * index;
-        let color = "blue";
-        if (index === 2 || index === 3) {
-          color = "red";
-        } else if (index === 5) {
-          color = "transparent";
-        }
-        drawLine(ctx, { x: 0, y: y }, { x: screenWidth, y: y }, color, yFactor);
-      }
-      //   drawLine(
-      //     ctx,
-      //     { x: 0, y: 20 },
-      //     { x: screenWidth, y: 20 },
-      //     "blue",
-      //     yFactor
-      //   );
-      //   drawLine(ctx, { x: 0, y: 40 }, { x: screenWidth, y: 40 }, "red", yFactor);
-      //   drawLine(ctx, { x: 0, y: 60 }, { x: screenWidth, y: 60 }, "red", yFactor);
-
-      //   drawLine(
-      //     ctx,
-      //     { x: 0, y: 80 },
-      //     { x: screenWidth, y: 80 },
-      //     "blue",
-      //     yFactor
-      //   );
-    }
-  };
 
   React.useEffect(() => {
     if (
@@ -140,7 +100,7 @@ const Canvas: React.FC<CanvasProps> = ({
         pageContextRef.current = pageContext;
       }
     }
-  }, [screenWidth, screenHeight]);
+  }, [screenWidth, screenHeight, brushSize]);
   React.useEffect(() => {
     if (!islocked) {
       const initialY = lineHeight * 0.75;
@@ -157,7 +117,15 @@ const Canvas: React.FC<CanvasProps> = ({
         );
       }
     }
-  }, [slateScreenType, screenHeight, screenWidth, clearToggle]);
+  }, [
+    slateScreenType,
+    screenHeight,
+    screenWidth,
+    clearToggle,
+    islocked,
+    lineHeight,
+    clearSlateScreen,
+  ]);
 
   React.useEffect(() => {
     console.log("isDrawing", isDrawing);
@@ -172,7 +140,7 @@ const Canvas: React.FC<CanvasProps> = ({
       clearScreenAction ? getEraser(brushSize) : clearEraser();
       // remove the data
     }
-  }, [brushColor, clearScreenAction, slateScreenType, brushSize]);
+  }, [brushColor, clearScreenAction, slateScreenType, brushSize, islocked]);
   const startDrawing = (nativeEvent: any) => {
     const { offsetX, offsetY } = nativeEvent;
     let ctx = contextRef.current;
@@ -204,6 +172,28 @@ const Canvas: React.FC<CanvasProps> = ({
     }
   };
 
+  const draw = useCallback(
+    (
+      x: number,
+      y: number,
+      strokeStyle: string | CanvasGradient | CanvasPattern,
+      lineWidth: number
+    ) => {
+      let ctx = contextRef.current;
+      if (ctx) {
+        if (clearScreenAction) {
+          ctx.clearRect(x, y + 7, 25, 25);
+        } else {
+          ctx.lineTo(x, y);
+          ctx.strokeStyle = strokeStyle;
+          ctx.lineWidth = lineWidth;
+          ctx.stroke();
+        }
+      }
+    },
+    [clearScreenAction]
+  );
+
   React.useEffect(() => {
     slatePattern.forEach((p) => {
       let ctx = contextRef.current;
@@ -215,57 +205,19 @@ const Canvas: React.FC<CanvasProps> = ({
         ctx.closePath();
       }
     });
-  }, [renderData]);
+  }, [brushSize, color, draw, renderData, slatePattern]);
 
   const storeData = (nativeEvent: any) => {
     const { offsetX, offsetY } = nativeEvent;
     setData([...data, { x: offsetX, y: offsetY }]);
     // loadData({ x: offsetX, y: offsetY });
   };
-  const draw = (
-    x: number,
-    y: number,
-    strokeStyle: string | CanvasGradient | CanvasPattern,
-    lineWidth: number
-  ) => {
-    let ctx = contextRef.current;
-    if (ctx) {
-      if (clearScreenAction) {
-        ctx.clearRect(x, y + 7, 25, 25);
-      } else {
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = strokeStyle;
-        ctx.lineWidth = lineWidth;
-        ctx.stroke();
-      }
-    }
-  };
+
   const drawing = (nativeEvent: any) => {
     if (!isDrawing && !isClearing) return;
     const { offsetX, offsetY } = nativeEvent;
     draw(offsetX, offsetY, color, brushSize);
     isDrawing && storeData(nativeEvent);
-  };
-
-  const clearSlateScreen = () => {
-    let ctx = pageContextRef.current;
-    let canvasCtx = pageCanvasRef.current;
-    if (ctx) {
-      if (canvasCtx) {
-        ctx.clearRect(0, 0, screenWidth, screenHeight);
-      }
-    }
-  };
-
-  const clearScreen = () => {
-    let ctx = contextRef.current;
-    let canvasCtx = canvasRef.current;
-    if (ctx) {
-      if (canvasCtx) {
-        ctx.clearRect(0, 0, screenWidth, screenHeight);
-        setClearToggle(!clearToggle);
-      }
-    }
   };
 
   return (
@@ -310,7 +262,7 @@ const Canvas: React.FC<CanvasProps> = ({
               onMouseDown={(e) => {
                 !islocked && startDrawing(e.nativeEvent);
               }}
-              onMouseUp={(e) => {
+              onMouseUp={() => {
                 !islocked && stopDrawing();
               }}
               onMouseMove={(e) => {
@@ -324,7 +276,7 @@ const Canvas: React.FC<CanvasProps> = ({
                 });
                 !islocked && startDrawing(mouseEvent);
               }}
-              onTouchEnd={(e) => {
+              onTouchEnd={() => {
                 !islocked && stopDrawing();
               }}
               onTouchMove={(e) => {
