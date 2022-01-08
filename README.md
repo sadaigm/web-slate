@@ -1,3 +1,5 @@
+## Webslate App
+
 This project is webslate app which allows user to draw/write anything in the drawing canvas
 
 ## Drawing Canvas Modes
