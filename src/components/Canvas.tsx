@@ -195,16 +195,17 @@ const Canvas: React.FC<CanvasProps> = ({
   );
 
   React.useEffect(() => {
-    slatePattern.forEach((p) => {
-      let ctx = contextRef.current;
-      if (ctx) {
-        ctx.beginPath();
-        p.pattern.forEach((f) =>
-          draw(f.x, f.y, p?.strokeStyle || color, p.lineWidth || brushSize)
-        );
-        ctx.closePath();
-      }
-    });
+    renderData &&
+      slatePattern.forEach((p) => {
+        let ctx = contextRef.current;
+        if (ctx) {
+          ctx.beginPath();
+          p.pattern.forEach((f) =>
+            draw(f.x, f.y, p?.strokeStyle || color, p.lineWidth || brushSize)
+          );
+          ctx.closePath();
+        }
+      });
   }, [brushSize, color, draw, renderData, slatePattern]);
 
   const storeData = (nativeEvent: any) => {
