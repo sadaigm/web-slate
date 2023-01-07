@@ -46,9 +46,9 @@ This app will interesting for the kids to draw or write or color
 
 ## More
 
-[Github Source Code](https://github.com/sadaigm/web-slate)
-[Star Repo](https://github.com/sadaigm/web-slate/stargazers)
-[watch](https://github.com/sadaigm/web-slate/watchers)
+- [Github Source Code](https://github.com/sadaigm/web-slate)
+- [Star Repo](https://github.com/sadaigm/web-slate/stargazers)
+- [watch](https://github.com/sadaigm/web-slate/watchers)
 
 ## About Project
 
